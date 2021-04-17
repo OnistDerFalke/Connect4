@@ -30,9 +30,9 @@ public class Game {
         for (byte i = 0; i < columns; i++)
             leftSides[i] = (Gdx.graphics.getWidth() - (size + offset)*columns)/2 + i*(size + offset);
 
-        rightSides = new float[columns];
-        for (byte i = 0; i < columns; i++)
-            rightSides[i] = (Gdx.graphics.getWidth() - (size + offset)*columns)/2 + size + i*(size + offset);
+        rightSides = new float[CONSTANTS.COLUMNS];
+        for (byte i = 0; i < CONSTANTS.COLUMNS; i++)
+            rightSides[i] = (Gdx.graphics.getWidth() - (CONSTANTS.SIZE + CONSTANTS.OFFSET)*CONSTANTS.COLUMNS)/2 + CONSTANTS.SIZE + i*(CONSTANTS.SIZE + CONSTANTS.OFFSET);
     }
 
     public GameEnding getGameEnding() {
@@ -43,7 +43,7 @@ public class Game {
         if (Gdx.input.isTouched()) {
             Point cursorPosition = new Point(Gdx.input.getX(), Gdx.input.getY());
             if(cursorPosition.y >= top && cursorPosition.y <= bottom) {
-                for(byte i = 0; i < columns; i++) {
+                for(byte i = 0; i < CONSTANTS.COLUMNS; i++) {
                     if(cursorPosition.x >= leftSides[i] && cursorPosition.x <= rightSides[i]) {
                         for(byte k = (byte) (rows - 1); k >= 0; k--) {
                             if(gameBoard[k][i].getColor() == FieldColor.EMPTY) {
@@ -72,7 +72,8 @@ public class Game {
         for(byte k = (byte) (rows - 1); k >= 0; k--) {
             if(gameBoard[k][rand].getColor() == FieldColor.EMPTY) {
                 gameBoard[k][rand].setColor(FieldColor.COMPUTER);
-                checkIfEnd(k, (byte)rand, FieldColor.COMPUTER);
+                if(gameEnding == GameEnding.INGAME)
+                    checkIfEnd(k, (byte)rand, FieldColor.COMPUTER);
                 return true;
             }
         }

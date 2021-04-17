@@ -50,7 +50,7 @@ public class GameLogic extends ApplicationAdapter {
                     gameBoard[i][j].draw(i, j, size, rows, columns, offset);
 
             if (!playerMove) {
-                playerMove = game.computerMove();
+                    playerMove = game.computerMove();
             }
             for(byte i = 0; i < rows; i++)
                 for(byte j = 0; j < columns; j++)

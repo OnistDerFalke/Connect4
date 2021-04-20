@@ -19,10 +19,6 @@ public class GameLogic extends ApplicationAdapter {
 
     private Game game;
     ShapeRenderer shapeRenderer;
-    private final byte rows = 6;
-    private final byte columns = 7;
-    private final int size = 60;
-    private final float offset = 0.1f*size;
     private Field[][] gameBoard;
     private Boolean playerMove;
     private GameEnding gameEnding;
@@ -32,11 +28,11 @@ public class GameLogic extends ApplicationAdapter {
         shapeRenderer = new ShapeRenderer();
         gameEnding = GameEnding.INGAME;
         playerMove = true;
-        gameBoard = new Field[rows][columns];
-        for(byte i = 0; i < rows; i++)
-            for(byte j = 0; j < columns; j++)
+        gameBoard = new Field[CONSTANTS.ROWS][CONSTANTS.COLUMNS];
+        for(byte i = 0; i < CONSTANTS.ROWS; i++)
+            for(byte j = 0; j < CONSTANTS.COLUMNS; j++)
                 gameBoard[i][j] = new Field(shapeRenderer);
-        game = new Game(rows, columns, size, offset, gameBoard, gameEnding);
+        game = new Game(gameBoard, gameEnding);
     }
 
     @Override
@@ -50,16 +46,16 @@ public class GameLogic extends ApplicationAdapter {
             if (playerMove) {
                 playerMove = !game.playerMove();
             }
-            for(byte i = 0; i < rows; i++)
-                for(byte j = 0; j < columns; j++)
-                    gameBoard[i][j].draw(i, j, size, rows, columns, offset);
+            for(byte i = 0; i < CONSTANTS.ROWS; i++)
+                for(byte j = 0; j < CONSTANTS.COLUMNS; j++)
+                    gameBoard[i][j].draw(i, j, CONSTANTS.SIZE, CONSTANTS.ROWS, CONSTANTS.COLUMNS, CONSTANTS.OFFSET);
 
             if (!playerMove) {
                     playerMove = game.computerMove();
             }
-            for(byte i = 0; i < rows; i++)
-                for(byte j = 0; j < columns; j++)
-                    gameBoard[i][j].draw(i, j, size, rows, columns, offset);
+            for(byte i = 0; i < CONSTANTS.ROWS; i++)
+                for(byte j = 0; j < CONSTANTS.COLUMNS; j++)
+                    gameBoard[i][j].draw(i, j, CONSTANTS.SIZE, CONSTANTS.ROWS, CONSTANTS.COLUMNS, CONSTANTS.OFFSET);
         } else if (gameEnding == GameEnding.PLAYERWIN) {
            changeAllColor(FieldColor.PLAYER);
         } else if (gameEnding == GameEnding.COMPUTERWIN) {
@@ -70,10 +66,10 @@ public class GameLogic extends ApplicationAdapter {
     }
 
     public void changeAllColor(FieldColor color) {
-        for(byte i = 0; i < rows; i++) {
-            for(byte j = 0; j < columns; j++) {
+        for(byte i = 0; i < CONSTANTS.ROWS; i++) {
+            for(byte j = 0; j < CONSTANTS.COLUMNS; j++) {
                 gameBoard[i][j].setColor(color);
-                gameBoard[i][j].draw(i, j, size, rows, columns, offset);
+                gameBoard[i][j].draw(i, j, CONSTANTS.SIZE, CONSTANTS.ROWS, CONSTANTS.COLUMNS, CONSTANTS.OFFSET);
             }
         }
     }
@@ -81,10 +77,10 @@ public class GameLogic extends ApplicationAdapter {
     public void drawBackground() {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(.06f, 0.22f, 0.79f,1);
-        shapeRenderer.rect((Gdx.graphics.getWidth() - (size + offset)*columns)/2 - offset,
-                (Gdx.graphics.getHeight() - (size + offset)*rows)/2 - offset,
-                (size + offset)*columns + offset,
-                (size + offset)*rows + offset);
+        shapeRenderer.rect((Gdx.graphics.getWidth() - (CONSTANTS.SIZE + CONSTANTS.OFFSET)*CONSTANTS.COLUMNS)/2 - CONSTANTS.OFFSET,
+                (Gdx.graphics.getHeight() - (CONSTANTS.SIZE + CONSTANTS.OFFSET)*CONSTANTS.ROWS)/2 - CONSTANTS.OFFSET,
+                (CONSTANTS.SIZE + CONSTANTS.OFFSET)*CONSTANTS.COLUMNS + CONSTANTS.OFFSET,
+                (CONSTANTS.SIZE + CONSTANTS.OFFSET)*CONSTANTS.ROWS + CONSTANTS.OFFSET);
         shapeRenderer.end();
     }
 }

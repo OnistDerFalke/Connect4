@@ -12,23 +12,19 @@ public class Game {
     private float bottom;
     private float[] leftSides;
     private float[] rightSides;
-    private byte columns;
-    private byte rows;
     private Field[][] gameBoard;
     private GameEnding gameEnding;
 
-    public Game(byte rows, byte columns, int size, float offset, Field[][] gameBoard, GameEnding gameEnding) {
-        this.rows = rows;
-        this.columns = columns;
+    public Game(Field[][] gameBoard, GameEnding gameEnding) {
         this.gameBoard = gameBoard;
         this.gameEnding = gameEnding;
 
-        top = (Gdx.graphics.getHeight() - (size + offset)*rows)/2;
-        bottom = (Gdx.graphics.getHeight() + (size + offset)*rows)/2;
+        top = (Gdx.graphics.getHeight() - (CONSTANTS.SIZE + CONSTANTS.OFFSET)*CONSTANTS.ROWS)/2;
+        bottom = (Gdx.graphics.getHeight() + (CONSTANTS.SIZE + CONSTANTS.OFFSET)*CONSTANTS.ROWS)/2;
 
-        leftSides = new float[columns];
-        for (byte i = 0; i < columns; i++)
-            leftSides[i] = (Gdx.graphics.getWidth() - (size + offset)*columns)/2 + i*(size + offset);
+        leftSides = new float[CONSTANTS.COLUMNS];
+        for (byte i = 0; i < CONSTANTS.COLUMNS; i++)
+            leftSides[i] = (Gdx.graphics.getWidth() - (CONSTANTS.SIZE + CONSTANTS.OFFSET)*CONSTANTS.COLUMNS)/2 + i*(CONSTANTS.SIZE + CONSTANTS.OFFSET);
 
         rightSides = new float[CONSTANTS.COLUMNS];
         for (byte i = 0; i < CONSTANTS.COLUMNS; i++)
@@ -45,7 +41,7 @@ public class Game {
             if(cursorPosition.y >= top && cursorPosition.y <= bottom) {
                 for(byte i = 0; i < CONSTANTS.COLUMNS; i++) {
                     if(cursorPosition.x >= leftSides[i] && cursorPosition.x <= rightSides[i]) {
-                        for(byte k = (byte) (rows - 1); k >= 0; k--) {
+                        for(byte k = (byte) (CONSTANTS.ROWS - 1); k >= 0; k--) {
                             if(gameBoard[k][i].getColor() == FieldColor.EMPTY) {
                                 gameBoard[k][i].setColor(FieldColor.PLAYER);
                                 checkIfEnd(k, i, FieldColor.PLAYER);
@@ -61,15 +57,18 @@ public class Game {
 
     public Boolean computerMove() {
         Random random = new Random();
-        int rand = random.nextInt(columns);
+        MinMax minmax = new MinMax();
+        //int rand = 2;
+        int rand = minmax.findMove(gameBoard, FieldColor.COMPUTER);
 
+        // symulowanie ruchu przeciwnika
         try {
             Thread.currentThread().sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        for(byte k = (byte) (rows - 1); k >= 0; k--) {
+        for(byte k = (byte) (CONSTANTS.ROWS - 1); k >= 0; k--) {
             if(gameBoard[k][rand].getColor() == FieldColor.EMPTY) {
                 gameBoard[k][rand].setColor(FieldColor.COMPUTER);
                 if(gameEnding == GameEnding.INGAME)
@@ -83,7 +82,7 @@ public class Game {
     public void checkIfEnd(byte row, byte column, FieldColor color) {
         // pion
         byte counter = 0;
-        for(byte i = 0; i < rows; i++) {
+        for(byte i = 0; i < CONSTANTS.ROWS; i++) {
             if(gameBoard[i][column].getColor() == color) {
                 counter++;
             } else {
@@ -98,7 +97,7 @@ public class Game {
 
         // poziom
         counter = 0;
-        for(byte i = 0; i < columns; i++) {
+        for(byte i = 0; i < CONSTANTS.COLUMNS; i++) {
             if(gameBoard[row][i].getColor() == color) {
                 counter++;
             } else {
@@ -118,7 +117,7 @@ public class Game {
             tmpCol--;
         }
         counter = 0;
-        int min = Math.min(rows - tmpRow, columns - tmpCol - 1);
+        int min = Math.min(CONSTANTS.ROWS - tmpRow, CONSTANTS.COLUMNS - tmpCol); //tutaj bylo jeszcze -1
         for(byte i = 0; i < min; i++) {
             if(gameBoard[tmpRow][tmpCol].getColor() == color) {
                 counter++;
@@ -136,12 +135,12 @@ public class Game {
         // prawy-gorny -> lewy-dolny ukos
         tmpRow = row;
         tmpCol = column;
-        while(tmpRow > 0 && tmpCol < columns - 1) {
+        while(tmpRow > 0 && tmpCol < CONSTANTS.COLUMNS - 1) {
             tmpRow--;
             tmpCol++;
         }
         counter = 0;
-        min = Math.min(rows - tmpRow, tmpCol + 1);
+        min = Math.min(CONSTANTS.ROWS - tmpRow, tmpCol + 1);
         for(byte i = 0; i < min; i++) {
             if(gameBoard[tmpRow][tmpCol].getColor() == color) {
                 counter++;
@@ -158,7 +157,7 @@ public class Game {
 
         //zapelniona plansza
         boolean overflow = true;
-        for(byte i = 0; i < columns; i++) {
+        for(byte i = 0; i < CONSTANTS.COLUMNS; i++) {
             if(gameBoard[0][i].getColor() == FieldColor.EMPTY) {
                 overflow = false;
             }
@@ -171,10 +170,10 @@ public class Game {
     public void setGameEnding(FieldColor color) {
         if (color == FieldColor.PLAYER) {
             gameEnding = GameEnding.PLAYERWIN;
-            System.out.println("Player win");
+            System.out.println("player");
         } else if (color == FieldColor.COMPUTER) {
             gameEnding = GameEnding.COMPUTERWIN;
-            System.out.println("Computer win");
+            System.out.println("computer");
         } else {
             gameEnding = GameEnding.DRAW;
         }

@@ -1,6 +1,7 @@
 package com.mygdx.game;
 
 import com.mygdx.game.Field.FieldColor;
+import static java.lang.Math.abs;
 
 public class MinMax {
     public byte findMove(Field[][] gameBoard, FieldColor color) {
@@ -15,7 +16,7 @@ public class MinMax {
         for (byte i = 0; i < CONSTANTS.COLUMNS; i++) {
             FieldColor[][] tempBoard = simulateMove(i, colorBoard, color);
             if (tempBoard != null){
-                temp = recursiveHeuristic(tempBoard, color, 1, false);
+                temp = recursiveHeuristic(tempBoard, color, color, 1, true);
                 System.out.println(i + ": " + temp);
                 if (move < 0 || temp > heuristics)
                 {
@@ -28,26 +29,38 @@ public class MinMax {
         return move;
     }
 
-    private int recursiveHeuristic(FieldColor[][] colorBoard, FieldColor color, int depth, boolean isMin) {
-        if (depth == CONSTANTS.MAX_DEPTH) {
-            return Heuristic.combineHeuristic(colorBoard, color);
+    private int recursiveHeuristic(FieldColor[][] colorBoard, FieldColor moveColor, FieldColor lastMoveColor, int depth, boolean isMin) {
+        if (depth >= CONSTANTS.MAX_DEPTH) {
+            return Heuristic.combineHeuristic(colorBoard, moveColor);
         } else {
-            int heuristic = 0;
+            //int heuristic = 0;
+            int heuristic = Heuristic.combineHeuristic(colorBoard, moveColor);
             boolean changed = false;
             int temp = 0;
-            for (byte i = 0; i < CONSTANTS.COLUMNS; i++) {
-                FieldColor[][] tempBoard = simulateMove(i, colorBoard, color);
-                if (tempBoard != null) {
-                    temp = recursiveHeuristic(tempBoard, color, 1, !isMin);
-                    if (!isMin && (!changed || temp > heuristic)) {
-                        heuristic = temp;
-                        changed = true;
-                    } else if (isMin && (!changed || temp < heuristic)) {
-                        heuristic = temp;
-                        changed = true;
+            FieldColor nowMovecolor;
+
+            /*TODO: TEN WARUNEK PRZEANALIZOWAC*/
+            if (abs(heuristic) <= 900) {
+                if (lastMoveColor == FieldColor.COMPUTER)
+                    nowMovecolor = FieldColor.PLAYER;
+                else
+                    nowMovecolor = FieldColor.COMPUTER;
+                heuristic = 0;
+                for (byte i = 0; i < CONSTANTS.COLUMNS; i++) {
+                    FieldColor[][] tempBoard = simulateMove(i, colorBoard, nowMovecolor);
+                    if (tempBoard != null) {
+                        temp = recursiveHeuristic(tempBoard, moveColor, nowMovecolor, depth + 1, !isMin);
+                        if (!isMin && (!changed || temp > heuristic)) {
+                            heuristic = temp;
+                            changed = true;
+                        } else if (isMin && (!changed || temp < heuristic)) {
+                            heuristic = temp;
+                            changed = true;
+                        }
                     }
                 }
             }
+
             return heuristic;
         }
     }

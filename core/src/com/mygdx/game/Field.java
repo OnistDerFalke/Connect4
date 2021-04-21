@@ -5,11 +5,11 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.Gdx;
 
 public class Field {
-    ShapeRenderer renderer;
-    public enum FieldColor {
+    public enum FieldColor{
         COMPUTER, PLAYER, EMPTY;
     }
 
+    ShapeRenderer renderer;
     private FieldColor value;
 
     public Field(ShapeRenderer renderer) {
